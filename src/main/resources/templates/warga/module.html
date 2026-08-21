@@ -1,0 +1,74 @@
+<html
+  lang="id"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layouts/master}"
+>
+  <th:block layout:fragment="extraHead">
+    <title>AduAja - Modul Warga</title>
+  </th:block>
+
+  <div layout:fragment="content" class="min-h-screen bg-gray-50">
+    <header class="bg-white shadow-sm">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <h2 class="text-2xl font-bold text-gray-900">Modul Warga</h2>
+        <p class="text-sm text-gray-600">
+          Pilih halaman warga yang ingin dibuka
+        </p>
+      </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <a
+          th:href="@{/warga/login}"
+          class="block bg-white rounded-xl border border-gray-100 shadow-sm p-6 hover:shadow-md transition-shadow"
+        >
+          <h3 class="text-lg font-semibold text-gray-900">Login</h3>
+          <p class="text-sm text-gray-600 mt-2">Masuk atau daftar akun warga</p>
+        </a>
+        <a
+          th:href="@{/warga/dashboard}"
+          class="block bg-white rounded-xl border border-gray-100 shadow-sm p-6 hover:shadow-md transition-shadow"
+        >
+          <h3 class="text-lg font-semibold text-gray-900">Dashboard</h3>
+          <p class="text-sm text-gray-600 mt-2">
+            Ringkasan laporan dan akses cepat
+          </p>
+        </a>
+        <a
+          th:href="@{/warga/create-report}"
+          class="block bg-white rounded-xl border border-gray-100 shadow-sm p-6 hover:shadow-md transition-shadow"
+        >
+          <h3 class="text-lg font-semibold text-gray-900">Buat Laporan</h3>
+          <p class="text-sm text-gray-600 mt-2">
+            Laporkan kerusakan infrastruktur
+          </p>
+        </a>
+        <a
+          th:href="@{/warga/report-history}"
+          class="block bg-white rounded-xl border border-gray-100 shadow-sm p-6 hover:shadow-md transition-shadow"
+        >
+          <h3 class="text-lg font-semibold text-gray-900">Riwayat Laporan</h3>
+          <p class="text-sm text-gray-600 mt-2">
+            Lihat semua laporan yang pernah dibuat
+          </p>
+        </a>
+        <a
+          th:href="@{/warga/notifications}"
+          class="block bg-white rounded-xl border border-gray-100 shadow-sm p-6 hover:shadow-md transition-shadow"
+        >
+          <h3 class="text-lg font-semibold text-gray-900">Notifikasi</h3>
+          <p class="text-sm text-gray-600 mt-2">Pembaruan status laporan</p>
+        </a>
+        <a
+          th:href="@{/warga/profile}"
+          class="block bg-white rounded-xl border border-gray-100 shadow-sm p-6 hover:shadow-md transition-shadow"
+        >
+          <h3 class="text-lg font-semibold text-gray-900">Profil</h3>
+          <p class="text-sm text-gray-600 mt-2">Kelola informasi akun</p>
+        </a>
+      </div>
+    </main>
+  </div>
+</html>

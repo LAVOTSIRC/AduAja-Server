@@ -1,0 +1,25 @@
+app = "aduaja"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  # Port internal harus sama dengan server.port aplikasi
+  PORT = "8080"
+
+  # Kredensial DB, JWT_SECRET, dsb. set lewat: fly secrets set KEY=VALUE
+
+[[services]]
+  internal_port = 8080
+  protocol = "tcp"
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+[[mounts]]
+  source = "aduaja_data"
+  destination = "/data/db"

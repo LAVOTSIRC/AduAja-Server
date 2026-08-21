@@ -1,0 +1,181 @@
+<html
+  lang="id"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layouts/master}"
+>
+  <th:block layout:fragment="extraHead">
+    <title>AduAja - Riwayat Laporan</title>
+  </th:block>
+
+  <div layout:fragment="content" class="min-h-screen bg-gray-50">
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center gap-3 h-16">
+          <a
+            th:href="@{/warga/dashboard}"
+            class="p-2 hover:bg-gray-100 rounded-lg"
+          >
+            <i data-lucide="arrow-left" class="w-5 h-5 text-gray-600"></i>
+          </a>
+          <div>
+            <h1 class="font-bold text-gray-900">Riwayat Laporan</h1>
+            <p class="text-xs text-gray-500" th:text="|${totalCount} laporan|">0 laporan</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main
+      class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6"
+      th:with="activeStatus=${filterStatus != null ? filterStatus : 'Semua'}"
+    >
+      <div class="mb-6">
+        <form
+          th:action="@{/warga/report-history}"
+          method="get"
+          class="relative"
+        >
+          <i
+            data-lucide="search"
+            class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+          ></i>
+          <input
+            type="text"
+            name="q"
+            th:value="${searchQuery}"
+            placeholder="Cari berdasarkan judul, nomor tiket, atau kategori..."
+            class="w-full pl-12 pr-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
+          />
+        </form>
+      </div>
+
+      <div class="mb-6 overflow-x-auto">
+        <div class="flex gap-2 min-w-max pb-2">
+          <a
+            th:each="opt : ${statusOptions}"
+            th:href="@{/warga/report-history(status=${opt.name}, q=${searchQuery})}"
+            th:class="${activeStatus == opt.name} ? 'px-4 py-2 rounded-lg font-medium text-sm transition-colors whitespace-nowrap bg-blue-600 text-white' : 'px-4 py-2 rounded-lg font-medium text-sm transition-colors whitespace-nowrap bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'"
+          >
+            <span th:text="${opt.name}">Status</span>
+            <span
+              class="ml-2 text-xs opacity-75"
+              th:text="|(${opt.count})|"
+              >(0)</span
+            >
+          </a>
+        </div>
+      </div>
+
+      <div
+        th:if="${reports != null and !#lists.isEmpty(reports)}"
+        class="space-y-4"
+        id="report-list"
+      >
+        <a
+          th:each="report : ${reports}"
+          th:href="@{/warga/report-detail(id=${report.id})}"
+          class="block bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+        >
+          <div class="flex items-start gap-4">
+            <div
+              class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0"
+            >
+              <i
+                th:attr="data-lucide=${report.icon}"
+                th:class="|w-6 h-6 ${report.iconColor}|"
+              ></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div
+                class="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-2"
+              >
+                <div class="flex-1 min-w-0">
+                  <h3
+                    class="font-semibold text-gray-900 mb-1 truncate"
+                    th:text="${report.title}"
+                  >
+                    Judul
+                  </h3>
+                  <p class="text-sm text-gray-500" th:text="${report.category}">
+                    Kategori
+                  </p>
+                </div>
+                <span
+                  th:class="|px-3 py-1 rounded-full text-xs font-medium ${report.statusColor} whitespace-nowrap self-start|"
+                  th:text="${report.status}"
+                  >Status</span
+                >
+              </div>
+              <div
+                class="flex flex-wrap items-center gap-3 text-xs text-gray-500"
+              >
+                <span class="font-medium text-gray-700" th:text="${report.id}"
+                  >ID</span
+                >
+                <span>&bull;</span>
+                <span th:text="${report.location}">Lokasi</span>
+                <span>&bull;</span>
+                <!-- Metadata kronologis (dibuat & diperbarui) -->
+                <span class="flex items-center gap-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  Dibuat: <span th:text="${#temporals.format(report.date, 'd MMM yyyy')}">Tanggal</span>
+                </span>
+                <span th:if="${report.updatedAt != null and report.updatedAt != '-'}" class="flex items-center gap-1 text-blue-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                  Diperbarui: <span th:text="${report.updatedAt}"></span>
+                </span>
+              </div>
+
+              <div th:if="${report.status == 'Menunggu Revisi'}" class="mt-3 pt-3 border-t border-amber-200">
+                <div class="flex items-center gap-2 text-amber-700">
+                  <i data-lucide="edit-2" class="w-4 h-4 text-amber-500"></i>
+                  <span class="text-sm font-medium">Klik untuk merevisi laporan</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div th:if="${reports != null and !#lists.isEmpty(reports)}" class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pt-4 border-t border-gray-200">
+        <p class="text-sm text-gray-600">
+          Menampilkan <span class="font-medium" th:text="${startIndex}">1</span>-<span class="font-medium" th:text="${endIndex}">1</span>
+          dari <span class="font-medium" th:text="${totalCount}">0</span> laporan
+        </p>
+        <div th:if="${totalPages > 1}" class="flex items-center gap-1">
+          <a th:if="${page > 1}"
+             th:href="@{/warga/report-history(page=${page - 1}, status=${filterStatus}, q=${searchQuery})}"
+             class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors">
+            Sebelumnya
+          </a>
+          <a th:each="p : ${pageNumbers}"
+             th:href="@{/warga/report-history(page=${p}, status=${filterStatus}, q=${searchQuery})}"
+             th:class="${p == page} ? 'px-3 py-1.5 rounded-lg text-sm bg-blue-600 text-white font-medium' : 'px-3 py-1.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors'"
+             th:text="${p}">1</a>
+          <a th:if="${page < totalPages}"
+             th:href="@{/warga/report-history(page=${page + 1}, status=${filterStatus}, q=${searchQuery})}"
+             class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors">
+            Selanjutnya
+          </a>
+        </div>
+      </div>
+
+      <div
+        th:if="${reports == null or #lists.isEmpty(reports)}"
+        class="bg-white p-12 rounded-xl text-center"
+      >
+        <div
+          class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4"
+        >
+          <i data-lucide="search" class="w-10 h-10 text-gray-400"></i>
+        </div>
+        <h3 class="font-semibold text-gray-900 mb-2">Tidak Ada Hasil</h3>
+        <p class="text-gray-500">
+          Tidak ditemukan laporan yang sesuai dengan pencarian Anda
+        </p>
+      </div>
+    </main>
+  </div>
+</html>
